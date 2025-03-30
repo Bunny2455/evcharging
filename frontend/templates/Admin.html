@@ -157,33 +157,31 @@
     </div>
     <script>
         async function loadStations() {
-            try {
-                const response = await fetch('/stations');
-                if (!response.ok) throw new Error('Failed to load stations');
-
-                const stations = await response.json();
-                const tableBody = document.querySelector('#stationsTable tbody');
-                tableBody.innerHTML = '';
-
-                stations.forEach(station => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${station.name}</td>
-                        <td>${station.location}</td>
-                        <td>${station.slotsAvailable}</td>
-                        <td>${station.status}</td>
-                        <td>
-                            <button onclick="openEditModal('${station._id}', '${station.name}', '${station.location}', '${station.slotsAvailable}', '${station.status}')">Edit</button>
-                            <button class="delete" onclick="deleteStation('${station._id}')">Delete</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading stations:', error);
-                alert('Failed to load stations.');
-            }
-        }
+    try {
+        const response = await fetch('/api/stations');
+        const stations = await response.json();
+        
+        const tableBody = document.querySelector('#stationsTable tbody');
+        tableBody.innerHTML = '';
+        
+        stations.forEach(station => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${station.name}</td>
+                <td>${station.location}</td>
+                <td>${station.slots_available}</td>
+                <td>${station.status}</td>
+                <td>
+                    <button onclick="openEditModal(${station.id}, '${station.name}', '${station.location}', ${station.slots_available}, '${station.status}')">Edit</button>
+                    <button class="delete" onclick="deleteStation(${station.id})">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error loading stations:', error);
+    }
+}
 
         function openAddModal() {
             document.getElementById('addModal').style.display = 'block';
@@ -216,7 +214,7 @@
             };
 
             try {
-                const response = await fetch('/stations', {
+                const response = await fetch('/api/stations', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newStation),
@@ -246,7 +244,7 @@
             };
 
             try {
-                const response = await fetch(`/stations/${id}`, {
+                const response = await fetch(`/api/stations/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updatedStation),
@@ -267,7 +265,7 @@
 
         async function deleteStation(id) {
             try {
-                const response = await fetch(`/stations/${id}`, { method: 'DELETE' });
+                const response = await fetch(`/api/stations/${id}`, { method: 'DELETE' });
 
                 if (response.ok) {
                     alert('Station deleted successfully');
