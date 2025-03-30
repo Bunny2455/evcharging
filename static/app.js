@@ -293,38 +293,21 @@ function loadLoginPage() {
         </section>
     `;
     
-    document.getElementById('login-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                localStorage.setItem('isAdmin', data.user.isAdmin);
-                
-                checkAuthStatus();
-                loadHomePage();
-            } else {
-                const error = await response.json();
-                alert(`Login failed: ${error.message}`);
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            alert('Failed to login. Please try again.');
-        }
-    });
     
+    // Example login usage
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+        await loginUser(email, password);
+        // Redirect or update UI
+        window.location.href = '/dashboard.html';
+    } catch (error) {
+        alert(error.message);
+    }
+});
     document.getElementById('register-link').addEventListener('click', loadRegisterPage);
 }
 
@@ -354,41 +337,22 @@ function loadRegisterPage() {
             <p>Already have an account? <a href="#" id="login-link-2">Login</a></p>
         </section>
     `;
+
+// Example registration usage
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     
-    document.getElementById('register-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-password').value;
-        const confirmPassword = document.getElementById('reg-confirm-password').value;
-        
-        if (password !== confirmPassword) {
-            alert('Passwords do not match');
-            return;
-        }
-        
-        try {
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, password })
-            });
-            
-            if (response.ok) {
-                alert('Registration successful. Please login.');
-                loadLoginPage();
-            } else {
-                const error = await response.json();
-                alert(`Registration failed: ${error.message}`);
-            }
-        } catch (error) {
-            console.error('Registration error:', error);
-            alert('Failed to register. Please try again.');
-        }
-    });
+    try {
+        await registerUser(name, email, password);
+        alert('Registration successful! Please login.');
+        window.location.href = '/login.html';
+    } catch (error) {
+        alert(error.message);
+    }
+});
     
     document.getElementById('login-link-2').addEventListener('click', loadLoginPage);
 }
