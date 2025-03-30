@@ -3,13 +3,16 @@ from flask_cors import CORS
 import sqlite3
 from database import create_connection, initialize_database
 import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
+load_dotenv()  # Load environment variables
+
 # Database configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "stationData.db")
+DATABASE = os.getenv('DATABASE_URL', os.path.join(BASE_DIR, "stationData.db"))
 
 # Initialize database
 conn = create_connection(DATABASE)
